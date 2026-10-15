@@ -42,10 +42,10 @@ Sistemul de bază tradițional folosește un control simplu de tip prag reactiv 
 ## Abordarea propusă (Sistemul Inteligent de Optimizare - Digital Twin)
 Abordarea propusă implementează un **Motor de Decizie Inteligent în 3 Pași** pe Raspberry Pi 5:
 
-1.  **Predicția Avansată a Evapotranspirației (Machine Learning):** Un model de regresie (ex. Random Forest / Linear Regression) antrenat pe fluxul de date de la senzorul BME280 și istoricul solului prezice cu precizie evoluția umidității pentru următoarele 24 de ore: $\hat{U}(t + 24\text{h})$.
+1.  **Predicția Avansată a Evapotranspirației (Machine Learning):** Un model de regresie (ex. Random Forest / Linear Regression) antrenat pe fluxul de date de la senzorul BME280 și istoricul solului prezice cu precizie evoluția umidității pentru următoarele 24 de ore:
 2.  **Simulare „What-If” în Timp Real:** Geamănul Digital rulează simulări paralele pentru a evalua impactul biologic și financiar al amânării sau executării irigării, luând în calcul șansele de precipitații gratuite oferite de fluxul meteo extern.
 3.  **Optimizarea Financiară Bazată pe ROI:** Comanda de pornire a pompei este emisă **doar după** validarea matematică a rentabilității economice:
-    $$\text{ROI} = (\text{Biomasă}_{\text{salvată}} \times \text{Preț}_{\text{recoltă}}) - (\text{Litri}_{\text{apă}} \times \text{Cost}_{\text{litru}})$$
+   > **ROI** = (**Biomasă**<sub>salvată</sub> × **Preț**<sub>recoltă</sub>) − (**Litri**<sub>apă</sub> × **Cost**<sub>litru</sub>)
     Dacă $\text{ROI} \le 0$ sau condițiile meteo indică o ploaie iminentă, sistemul inteligent blochează sau ajustează autonom volumul pompat, protejând randamentul financiar al fermierului.
 
 ---
