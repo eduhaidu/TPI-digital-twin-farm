@@ -1,12 +1,12 @@
 # Smart Irrigation Digital Twin: ROI-Driven Proactive Edge Optimization
 
-## Team
+## Membrii echipei
 - Libotean Cosmin
 - Haidu Eduard
 
 --- 
 
-## IoT Scenario
+## Scenariul IoT
 Proiectul propus simulează o parcelă agricolă monitorizată de noduri IoT și coordonată de un Geamăn Digital (Digital Twin) avansat, găzduit pe un server Edge (Raspberry Pi 5). Proiectul se concentrează pe luarea deciziilor autonome, proactive, bazate pe o funcție de optimizare a profitului net (ROI). Sistemul rulează simulări predictive continue corelând datele de umiditate din sol, microclimatul aerului (BME280), prognoza meteo și costul dinamic al resurselor (apă/energie) cu valoarea estimată a recoltei la momentul recoltării.
 
 **Senzori utilizați:**
@@ -35,7 +35,7 @@ Un sistem autonom bazat pe un Geamăn Digital inteligent, care anticipează curb
 ---
 
 ## Baseline
-Sistemul de bază tradițional folosește un control simplu de tip prag reactiv (`if-else`). Astfel, când sistemul detectează că pragul necesar de umiditate a fost atins sau depășit, sistemul trimite o comandă către releuri pentru a activa sau dezactiva sistemul de irigare.
+Sistemul de bază tradițional folosește un control simplu de tip prag reactiv (`if-else`). Astfel, când sistemul detectează că pragul necesar de umiditate a fost atins sau depășit, sistemul trimite o comandă către releuri pentru a activa sau dezactiva pompele de irigare.
 
 ---
 
