@@ -7,14 +7,16 @@
 --- 
 
 ## Scenariul IoT
-Proiectul propus simulează o parcelă agricolă monitorizată de noduri IoT și coordonată de un Geamăn Digital (Digital Twin) avansat, găzduit pe un server Edge (Raspberry Pi 5). Proiectul se concentrează pe luarea deciziilor autonome, proactive, bazate pe o funcție de optimizare a profitului net (ROI). Sistemul rulează simulări predictive continue corelând datele de umiditate din sol, microclimatul aerului (BME280), prognoza meteo și costul dinamic al resurselor (apă/energie) cu valoarea estimată a recoltei la momentul recoltării.
+Proiectul simulează o parcelă agricolă monitorizată de noduri IoT și coordonată de un Geamăn Digital (Digital Twin) avansat, găzduit pe un server Edge (Raspberry Pi 5). Proiectul se concentrează pe luarea deciziilor autonome, proactive, bazate pe o funcție de optimizare a profitului net (ROI). Sistemul rulează simulări predictive continue corelând datele de umiditate din sol, microclimatul aerului (BME280), prognoza meteo și costul dinamic al resurselor (apă/energie) cu valoarea estimată a recoltei la momentul recoltării.
 
 **Senzori utilizați:**
 *   **Fizici (Machetă hardware-in-the-loop pe ESP32):** Senzor capacitiv de umiditate a solului v1.2, senzor meteo BME280 (temperatură și umiditate aer) și un modul releu (3.3V) pentru acționarea fizică a pompei.
 *   **Simulați (În Python):** Debitmetru de apă (pentru cuantificarea litrilor consumați și a costului operațional) și un flux de date Meteo & Piață (prognoza precipitațiilor pe 24h și prețul apei/recoltei).
 
+Proiectul va simula colectarea datelor despre umiditatea solului de la 2 senzori capacitivi folosind setul de date **Soil Moisture Dataset**, va simula preluarea datelor de la un senzor meteo cu ajutorul **OpenMeteo API**, iar prețurile recoltei și al apei conform pieței vor fi obținute prin intermediul API-ului **TradingEconomicsAPI**. Aceste informații vor fi stocate într-o bază de date Time-Series pentru a afișa grafice pe interfață și vor fi utilizate de modelul de Machine Learning pentru a realiza predicții ale costurilor de irigare ținând cont de condițiile meteo și de starea pieței.
+
 **Anomalii și scenarii critice modelate:**
-*   *Valul de caniculă extremă:* Creșterea rapidă a ratei de evapotranspirație care necesită ajustarea proactivă a dozajului de apă înainte ca planta să intre în stadiul de ofilire permanentă.
+*   *Diferențe mari de temperatură în intervale de timp apropiate:* Situațiile în care temperatura înregistrată de senzorul meteo crește brusc de la o oră la alta testează abilitatea sistemului de a recunoaște diferența dintre variațiile realiste și înregistrările eronate.
 *   *Restricții și fluctuații economice:* Variații bruște ale costului resurselor de irigare corelate cu fluctuațiile de preț ale pieței agricole, testând robustețea deciziei autonome a Geamănului Digital.
 
 ---
@@ -88,3 +90,14 @@ Abordarea propusă implementează un **Motor de Decizie Inteligent în 3 Pași**
 ## Limitări
 *   **Acuratețea Prognozei Externe:** Performanța proactivă depinde de acuratețea datelor furnizate de API-ul meteo extern; deviațiile majore pot influența marja de profit estimată.
 *   **Ipoteza de omogenitate:** Modelul presupune un comportament hidrologic uniform în zona senzorului fizic de referință.
+
+---
+
+## Resurse utilizate
+* [OpenMeteo API](https://open-meteo.com/en/docs)
+* [Soil Moisture Dataset](https://www.kaggle.com/datasets/amirmohammdjalili/soil-moisture-dataset)
+* [Trading Economics API](https://docs.tradingeconomics.com)
+
+Referințe
+
+ 
