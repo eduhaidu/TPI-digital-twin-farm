@@ -1,4 +1,4 @@
-# Smart Irrigation Digital Twin: ROI-Driven Proactive Edge Optimization
+# Sistem IoT de Irigare Inteligentă: Optimizarea Randamentului Recoltei și a Costului de Apă prin Machine Learning
 
 ## Membrii echipei
 - Libotean Cosmin
@@ -7,73 +7,103 @@
 --- 
 
 ## Scenariul IoT
-Proiectul simulează o parcelă agricolă monitorizată de noduri IoT și coordonată de un Geamăn Digital (Digital Twin) avansat, găzduit pe un server Edge (Raspberry Pi 5). Proiectul se concentrează pe luarea deciziilor autonome, proactive, bazate pe o funcție de optimizare a profitului net (ROI). Sistemul rulează simulări predictive continue corelând datele de umiditate din sol, microclimatul aerului (BME280), prognoza meteo și costul dinamic al resurselor (apă/energie) cu valoarea estimată a recoltei la momentul recoltării.
+Proiectul dezvoltă și simulează un sistem IoT de irigare inteligentă destinat unei culturi agricole, având ca scop optimizarea consumului de apă și maximizarea șanselor de a obține o recoltă bogată. Spre deosebire de sistemele clasice care udă solul mecanic la scăderea umidității sub un prag fix, acest sistem utilizează un model de Machine Learning pentru a lua decizii proactive pe baza evoluției solului și a prognozei meteo.
+
+Sistemul este complet simulat software (fără componente fizice precum ESP32 sau relee de acționare a pompelor) și evaluează eficiența irigării prin două direcții clare: procentul de creștere a șanselor unei recolte mai bune (%) și costul total al apei consumate, calculat pe baza unui preț fix al apei stabilit la începutul simulării.
 
 **Senzori utilizați:**
-*   **Fizici (Machetă hardware-in-the-loop pe ESP32):** Senzor capacitiv de umiditate a solului v1.2, senzor meteo BME280 (temperatură și umiditate aer) și un modul releu (3.3V) pentru acționarea fizică a pompei.
-*   **Simulați (În Python):** Debitmetru de apă (pentru cuantificarea litrilor consumați și a costului operațional) și un flux de date Meteo & Piață (prognoza precipitațiilor pe 24h și prețul apei/recoltei).
+Nu se utilizează hardware fizic; toate nodurile senzoriale sunt simulate în Python, generând fluxuri de date în timp real pentru următoarele mărimi:
 
-Proiectul va simula colectarea datelor despre umiditatea solului de la 2 senzori capacitivi folosind setul de date **Soil Moisture Dataset**, va simula preluarea datelor de la un senzor meteo cu ajutorul **OpenMeteo API**, iar prețurile recoltei și al apei conform pieței vor fi obținute prin intermediul API-ului **TradingEconomicsAPI**. Aceste informații vor fi stocate într-o bază de date Time-Series pentru a afișa grafice pe interfață și vor fi utilizate de modelul de Machine Learning pentru a realiza predicții ale costurilor de irigare ținând cont de condițiile meteo și de starea pieței.
+* *2 × Senzori capacitivi de umiditate a solului*: Măsoară umiditatea volumetrică a solului (%) în două puncte ale parcelei pentru a determina nivelul actual de hidratare a rădăcinilor (date extrase din Soil Moisture Dataset).
+
+* *1 × Senzor meteo local (simulare BME280 + API Meteo)*: Măsoară temperatura aerului (°C), umiditatea relativă a aerului (%) și preia prognoza de precipitații (mm/h) pe următoarele 24 de ore prin intermediul OpenMeteo API.
+
+* *1 × Debitmetru de apă virtual*: Cuantifică volumul de apă consumat (Litri) în timpul sesiunilor de irigare recomandate de sistem, valoare folosită direct pentru calculul costului pe baza tarifului fix.
+
+**Date utilizate și Modelul de Machine Learning**
+* *Date de intrare*: Istoricul umidității solului de la cei 2 senzori, temperatura aerului, umiditatea aerului și precipitațiile prognozate.
+
+* *Parametru configurabil*: Prețul fix pe litru/metru cub de apă (setat la inițializarea sistemului).
+
+* *Modelul ML (Random Forest Regressor)*: Antrenat pe datele senzorilor și istoricul climatic, modelul prezice evoluția umidității solului pe următoarele 24 de ore (rata de evapotranspirație) și estimează procentul de succes/sănătate a recoltei (%) în funcție de stresul hidric evitat.
 
 **Anomalii și scenarii critice modelate:**
-*   *Diferențe mari de temperatură în intervale de timp apropiate:* Situațiile în care temperatura înregistrată de senzorul meteo crește brusc de la o oră la alta testează abilitatea sistemului de a recunoaște diferența dintre variațiile realiste și înregistrările eronate.
-*   *Restricții și fluctuații economice:* Variații bruște ale costului resurselor de irigare corelate cu fluctuațiile de preț ale pieței agricole, testând robustețea deciziei autonome a Geamănului Digital.
+*   *Diferențe mari de temperatură în intervale scurte:* Variații bruște de temperatură de la o oră la alta pentru a testa capacitatea sistemului de a filtra erorile de citire față de valurile reale de căldură.
+*   *Ploi iminente după scăderea umidității:* Situații în care solul este uscat, dar urmează să plouă în câteva ore sunt un scenariu cheie în care sistemul inteligent amână irigarea și economisește apă comparativ cu metoda clasică.
 
 ---
 
-## Arhitectură
-`ESP32 Node (Senzor Sol + BME280)` + `Weather/Market Simulator` $\rightarrow$ `MQTT Broker` $\rightarrow$ `Raspberry Pi 5 (AI Digital Twin & ROI Engine)` $\rightarrow$ `InfluxDB (Time-Series)` $\rightarrow$ `Streamlit Edge Dashboard`
+## Obiective
+[ ] Simularea celor 2 senzori de umiditate a solului (extragerea și transmiterea datelor din Soil Moisture Dataset).   
+[ ] Simularea senzorului meteo și a prognozei pe 24h (integrarea cu OpenMeteo API).   
+[ ] Implementarea fluxului de date prin MQTT către Backend și stocarea în baza de date Time-Series (InfluxDB).   
+[ ] Antrenarea modelului de Machine Learning pentru predicția umidității solului și estimarea procentului de îmbunătățire a recoltei.   
+[ ] Crearea unui Dashboard în Streamlit pentru compararea metodei propuse cu metoda clasică (cost apă vs. șanse de producție).   
+
+## Arhitectură și fluxul de date
+Fluxul de date urmează arhitectura standard IoT, structurată pe 5 niveluri:
+
+`Senzori simulați`$\rightarrow$ `MQTT Broker` $\rightarrow$ `Backend (Python + ML Engine)` $\rightarrow$ `Bază de date Time-Series (InfluxDB)` $\rightarrow$ `Streamlit Dashboard`
+
+1. *Senzori (Generator Python)*: Scripturile simulează cei 2 senzori de sol, senzorul meteo și debitmetrul, împachetând măsurătorile în mesaje JSON.   
+2. *Gateway (Mosquitto MQTT Broker)*: Preia mesajele publicate de senzori pe topicuri dedicate (ex: iot/sol/umiditate, iot/meteo/stare) și le rutează asincron către backend.   
+
+3. *Backend (Serviciu Python & ML Inference)*: Abonat la Gateway, acest modul validează datele, rulează modelul de Machine Learning pentru a prezice umiditatea și procentul de randament al recoltei, decide cantitatea optimă de apă necesară și calculează costul aferent (la preț fix).
+
+4. *Bază de date Time-Series (InfluxDB)*: Stochează cu marcaj temporal (timestamp) toate valorile brute de la senzori, predicțiile ML, volumul de apă consumat și costurile cumulate, atât pentru metoda inteligentă, cât și pentru metoda clasică.   
+
+5. *Dashboard (Streamlit)*: Interfață grafică conectată la InfluxDB care afișează în timp real graficele de umiditate, starea vremii, procentul estimat de succes al recoltei și economia financiară realizată din reducerea consumului de apă.   
 
 ---
 
 ## Întrebare de cercetare
-În ce măsură un motor de decizie bazat pe un Digital Twin cu Machine Learning și optimizare ROI pe nodul Edge poate maximiza profitul net al unei culturi agricole în scenarii climatice și economice dinamice, comparativ cu automatizările tradiționale bazate pe reguli reactive?
+În ce măsură poate un sistem IoT de irigare bazat pe predicții Machine Learning să reducă volumul și costul apei consumate (la tarif fix), menținând un procent de succes al recoltei cel puțin egal sau superior față de un sistem clasic bazat pe praguri fixe (if-else)?
 
 ---
 
 ## Ipoteză inițială
-Un sistem autonom bazat pe un Geamăn Digital inteligent, care anticipează curba de umiditate a solului pe 24h prin modele de regresie ML și evaluează rentabilitatea economică înainte de fiecare acțiune, poate reduce consumul de resurse și crește marja de profit net a exploatației cu cel puțin $15\%$, adaptându-se fluid la șocurile de preț și la condițiile meteo neprevăzute.
+Utilizarea unui model de regresie Machine Learning care corelează umiditatea solului cu prognoza meteo pe 24h permite anticiparea precipitațiilor și evitarea udărilor inutile. Astfel:   
+    1. În condiții de randament egal al recoltei (%) între metoda clasică și cea propusă, metoda noastră câștigă prin reducerea costului de irigare cu cel puțin 15–20%.
+    2. Pentru același buget de apă consumat, metoda propusă crește procentul de șanse pentru o recoltă mai bună (%) prin evitarea perioadelor de stres hidric sever sau supra-udare.
 
 ---
 
 ## Baseline
-Sistemul de bază tradițional folosește un control simplu de tip prag reactiv (`if-else`). Astfel, când sistemul detectează că pragul necesar de umiditate a fost atins sau depășit, sistemul trimite o comandă către releuri pentru a activa sau dezactiva pompele de irigare.
+Sistemul de referință folosește o logică reactivă simplă de tip prag (`if-else`). Când media celor 2 senzori de umiditate a solului scade sub un prag fix (ex: 30%), sistemul comandă administrarea unei cantități fixe de apă, indiferent dacă urmează să plouă în următoarele ore sau dacă temperatura exterioară este scăzută. Nu se iau în calcul prognoza meteo sau rata de evaporare.
 
 ---
 
-## Abordarea propusă (Sistemul Inteligent de Optimizare - Digital Twin)
-Abordarea propusă implementează un **Motor de Decizie Inteligent în 3 Pași** pe Raspberry Pi 5:
+## Abordarea propusă (Sistemul Inteligent de Irigare)
+Abordarea propusă implementează un **Motor de Decizie Inteligent în 3 Pași**:
 
-1.  **Predicția Avansată a Evapotranspirației (Machine Learning):** Un model de regresie (ex. Random Forest / Linear Regression) antrenat pe fluxul de date de la senzorul BME280 și istoricul solului prezice cu precizie evoluția umidității pentru următoarele 24 de ore:
-2.  **Simulare „What-If” în Timp Real:** Geamănul Digital rulează simulări paralele pentru a evalua impactul biologic și financiar al amânării sau executării irigării, luând în calcul șansele de precipitații gratuite oferite de fluxul meteo extern.
-3.  **Optimizarea Financiară Bazată pe ROI:** Comanda de pornire a pompei este emisă **doar după** validarea matematică a rentabilității economice:
-   > **ROI** = (**Biomasă**<sub>salvată</sub> × **Preț**<sub>recoltă</sub>) − (**Litri**<sub>apă</sub> × **Cost**<sub>litru</sub>)
-    Dacă $\text{ROI} \le 0$ sau condițiile meteo indică o ploaie iminentă, sistemul inteligent blochează sau ajustează autonom volumul pompat, protejând randamentul financiar al fermierului.
+1.  **Predicția Umidității Solului (Machine Learning):** Modelul Random Forest Regressor analizează datele de la cei 2 senzori de sol și senzorul meteo pentru a prezice curba de umiditate pe următoarele 24 de ore.
+2.  **Estimarea Șanselor de Producție (%):** Pe baza timpului petrecut de cultură în zona optimă de umiditate (fără stres hidric sau băltire), sistemul calculează procentul de potențial al recoltei (ex: menținerea umidității în intervalul optim 40%–60% asigură o creștere cu X% a șanselor unei recolte maxime față de expunerea la secetă).
+3.  **Logica de Optimizare a Costului (La Preț Fix al Apei):** 
+   > **Cost Irigare** = **Volum Apă** (Litri) × **Preț Fix**<sub>litru</sub>
+    Dacă modelul ML prezice că o ploaie iminentă va readuce umiditatea în parametri optimi fără a afecta procentul de producție al recoltei, irigarea este anulată sau redusă. Regula de validare: Dacă Procent Producție ML >= Procent Producție clasic și Cost Irigare ML < Cost Irigare clasic, algoritmul inteligent este declarat superior
 
 ---
 
 ## Plan experimental
-*   **Dataset / Date generate:** Simulator Python care generează serii de timp de înaltă fidelitate pentru 60 de zile de ciclu agricol (variabila meteo, dinamica umidității, costuri variabile), utilizate pentru antrenarea și testarea modelului inteligent.
+*   **Dataset / Date generate:** Simulator Python care rulează un ciclu agricol de 60 de zile, combinând datele din Soil Moisture Dataset cu istoricul meteo din OpenMeteo API.
 *   **Scenariul de test (Experimente):**
-    *   *Scenariul 1 (Adaptabilitate Climatică):* Comportamentul sistemului inteligent în fața fluctuațiilor bruște de temperatură și a episoadelor de secetă.
-    *   *Scenariul 2 (Optimizare Economică):* Testarea răspunsului Geamănului Digital la creșteri abrupte ale costului apei sau scăderi ale prețului de piață al recoltei.
-    *   *Scenariul 3 (Acuratețea Predicției ML):* Evaluarea erorilor de estimare a umidității solului de către modelele de pe Edge ($RMSE$, $MAE$).
-*   **Variabile controlate:** Pragul de stres hidric al culturii, profilul termic zilnic, tarifele resurselor.
+    *   *Scenariul 1 (Ploaie după secetă):* Umiditatea scade sub pragul critic cu 3 ore înainte de o ploaie prognozată. Metoda clasică udă inutil; metoda ML așteaptă ploaia, obținând același procent de recoltă la un cost de apă mai mic.
+    *   *Scenariul 2 (Caniculă și evapotranspirație accelerată):* Temperaturi ridicate și anomalii termice bruște. Evaluarea modului în care modelul ML dozează preventiv apa pentru a crește cu X% șansele unei recolte sănătoase.
+    *   *Scenariul 3 (Acuratețea Predicției ML):* Evaluarea erorilor de estimare a umidității solului ($RMSE$, $MAE$).
+*   **Variabile controlate:** Prețul fix al apei (RON/Litru), pragul de stres hidric al culturii (%), durata simulării.
 *   **Metrici de evaluare:**
-    1.  **Eroarea de Predicție a Modelului ML ($RMSE$):** Cât de bine anticipează AI-ul dinamica solului.
-    2.  **Eficiența Hidrică Globală ($L$):** Volumul total de apă administrat inteligent.
-    3.  **Profitul Net Optimizat ($\text{RON}$):** Valoarea finală a recoltei minus costurile calculate de motorul ROI.
-    4.  **Latența de Decizie pe Edge ($ms$):** Timpul de răspuns al scriptului de pe Raspberry Pi 5.
+    1.  **Procentul estimat de succes al recoltei (%):** Calculat pe baza orelor de hidratare optimă a plantei (Metoda ML vs. Clasic).
+    2.  **Volumul total de apă consumat ($L$) și Costul Total ($RON$):** Calculat direct din litrii administrați înmulțiți cu prețul fix stabilit.
+    3.  **Eroarea de Predicție a Modelului ML (RMSE / MAE):** curatețea cu care modelul anticipează umiditatea solului.
  
 ---
 
 ## Tehnologii propuse
-*   **Sensor Simulation & Physical Node:** Python (generator date) + ESP32 fizic cu senzor sol capacitiv, BME280 și releu 3.3V.
-*   **Edge Server:** Raspberry Pi 5 (8GB RAM) + SSD NVMe Western Digital 256GB.
-*   **Communication:** MQTT (Mosquitto Broker local).
-*   **Database:** InfluxDB / CSV pentru stocarea metricilor inteligente.
-*   **Frontend:** Streamlit (Python) – panou de control dedicat vizualizării stării Geamănului Digital și a simulărilor financiare.
-*   **ML / AI:** Python (`scikit-learn`, `pandas`, `numpy`).
+*   **Simulare senzori:** Python (requests, paho-mqtt, scripturi de citire și extragere a datelor din dataset)
+*   **Gateway:** MQTT (Mosquitto Broker local).
+*   **Backend & Machine Learning:** Python (scikit-learn, pandas, numpy).
+*   **Bază de date Time-Series:** InfluxDB
+*   **Frontend:** Streamlit (vizualizare metrici în timp real și grafice comparative)
 
 ---
 
@@ -88,16 +118,16 @@ Abordarea propusă implementează un **Motor de Decizie Inteligent în 3 Pași**
 ---
 
 ## Limitări
-*   **Acuratețea Prognozei Externe:** Performanța proactivă depinde de acuratețea datelor furnizate de API-ul meteo extern; deviațiile majore pot influența marja de profit estimată.
-*   **Ipoteza de omogenitate:** Modelul presupune un comportament hidrologic uniform în zona senzorului fizic de referință.
+*   **Acuratețea Prognozei Meteo:** Performanța proactivă depinde de acuratețea datelor furnizate de API-ul meteo extern.
+*   **Simulare Software:** Neutilizând senzori fizici și supape reale, sistemul nu ia în calcul pierderile mecanice de pe conducte sau întârzierile de infiltrare a apei în straturile profunde ale solului.
 
 ---
 
-## Resurse utilizate
+## Resurse utilizate / referințe
 * [OpenMeteo API](https://open-meteo.com/en/docs)
 * [Soil Moisture Dataset](https://www.kaggle.com/datasets/amirmohammdjalili/soil-moisture-dataset)
-* [Trading Economics API](https://docs.tradingeconomics.com)
+* [Chinadrip](https://www.chinadrip.com/drip-irrigation_c2?gad_source=1&gad_campaignid=23120891475&gbraid=0AAAAADhI9utvrrOYY9eqNfQaf_bryS0IZ&gclid=Cj0KCQjw6ObWBhDDARIsAFdfcUhneYcWzLi8FbmZrNdmNHRnKJVMisevDfT2T5LrOsjwdQcSzaZG7gEaAhm2EALw_wcB)
+* [Automating My Vegetable Garden Irrigation with Home Assistant - Rudy Mens](https://lazyadmin.nl/smart-home/home-assistant-garden-irrigation-automation/)
 
-Referințe
 
  
