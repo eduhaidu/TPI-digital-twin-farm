@@ -9,7 +9,7 @@
 ## Scenariul IoT
 Proiectul dezvoltă și simulează un sistem IoT de irigare inteligentă destinat unei culturi agricole, având ca scop optimizarea consumului de apă și maximizarea șanselor de a obține o recoltă bogată. Spre deosebire de sistemele clasice care udă solul mecanic la scăderea umidității sub un prag fix, acest sistem utilizează un model de Machine Learning pentru a lua decizii proactive pe baza evoluției solului și a prognozei meteo.
 
-Sistemul este complet simulat software (fără componente fizice precum ESP32 sau relee de acționare a pompelor) și evaluează eficiența irigării prin două direcții clare: procentul de creștere a șanselor unei recolte mai bune (%) și costul total al apei consumate, calculat pe baza unui preț fix al apei stabilit la începutul simulării.
+Sistemul este complet simulat software (fără componente fizice precum ESP32 sau relee de acționare a pompelor) și evaluează eficiența irigării prin două direcții: procentul de creștere a șanselor unei recolte mai bune (%) și costul total al apei consumate, calculat pe baza unui preț fix al apei stabilit la începutul simulării.
 
 **Senzori utilizați:**
 Nu se utilizează hardware fizic; toate nodurile senzoriale sunt simulate în Python, generând fluxuri de date în timp real pentru următoarele mărimi:
@@ -34,11 +34,11 @@ Nu se utilizează hardware fizic; toate nodurile senzoriale sunt simulate în Py
 ---
 
 ## Obiective
-[ ] Simularea celor 2 senzori de umiditate a solului (extragerea și transmiterea datelor din Soil Moisture Dataset).   
-[ ] Simularea senzorului meteo și a prognozei pe 24h (integrarea cu OpenMeteo API).   
-[ ] Implementarea fluxului de date prin MQTT către Backend și stocarea în baza de date Time-Series (InfluxDB).   
-[ ] Antrenarea modelului de Machine Learning pentru predicția umidității solului și estimarea procentului de îmbunătățire a recoltei.   
-[ ] Crearea unui Dashboard în Streamlit pentru compararea metodei propuse cu metoda clasică (cost apă vs. șanse de producție).   
+- [ ] Simularea celor 2 senzori de umiditate a solului (extragerea și transmiterea datelor din Soil Moisture Dataset).   
+- [ ] Simularea senzorului meteo și a prognozei pe 24h (integrarea cu OpenMeteo API).   
+- [ ] Implementarea fluxului de date prin MQTT către Backend și stocarea în baza de date Time-Series (InfluxDB).   
+- [ ] Antrenarea modelului de Machine Learning pentru predicția umidității solului și estimarea procentului de îmbunătățire a recoltei.   
+- [ ] Crearea unui Dashboard în Streamlit pentru compararea metodei propuse cu metoda clasică (cost apă vs. șanse de producție).   
 
 ## Arhitectură și fluxul de date
 Fluxul de date urmează arhitectura standard IoT, structurată pe 5 niveluri:
