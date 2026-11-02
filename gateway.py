@@ -1,4 +1,6 @@
 import paho.mqtt.client as mqtt
+import asyncio
+import json
 
 class Gateway:
     def __init__(self, broker_address, port=1883):
@@ -25,10 +27,17 @@ class Gateway:
         print(f"Subscribed to topic '{topic}'")
 
     def on_message(self, client, userdata, message):
-        print(f"Received message from topic '{message.topic}': {message.payload.decode()}") 
+        print(f"Received message from topic '{message.topic}': {message.payload.decode()}")
+        self.store_data(message.payload.decode())
+        print(f"Data stored in 'date_umiditate.json': {message.payload.decode()}")
+
+    def store_data(self, data):
+        with open("date_umiditate.json", "a") as file:
+            json_data = json.loads(data)
+            json.dump(json_data, file)
 
 def main():
-    broker_address = "127.0.0.1"  # Replace with your MQTT broker address
+    broker_address = "127.0.0.1"  
     gateway = Gateway(broker_address)
     gateway.connect()
 

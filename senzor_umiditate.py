@@ -4,6 +4,7 @@ import paho.mqtt.client as mqtt
 import time
 import argparse
 import json
+import threading
 
 class SenzorUmiditate:
     def __init__(self, broker_address, port=1883):
@@ -62,7 +63,8 @@ def main():
     senzor.subscribe(topic)
 
     data = SenzorUmiditate.read_data(file_path)
-    senzor.send_data_to_gateway(data, topic, sensor_id=sensor_id)
+    thread = threading.Thread(target=senzor.send_data_to_gateway, args=(data, topic, 1, sensor_id))
+    thread.start()
 
 if __name__ == "__main__":
     main()
