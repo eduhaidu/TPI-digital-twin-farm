@@ -24,7 +24,7 @@ class SenzorUmiditate:
     def on_message(self, client, userdata, message):
         print(f"Received message from topic '{message.topic}': {message.payload.decode()}")
 
-    def read_data(file_path):
+    def read_data(self, file_path):
         try:
             data = pd.read_csv(file_path)
             return data
@@ -41,8 +41,12 @@ class SenzorUmiditate:
             for _, row in data.iterrows():
                 message = json.dumps({
                     "sensor_id": sensor_id,
+                    "year": int(row["year"]),
+                    "month": int(row["month"]),
+                    "day": int(row["day"]),
                     "hour": int(row["hour"]),
                     "minute": int(row["minute"]),
+                    "second": int(row["second"]),
                     "moisture": float(row[sensor_column_name]),
                 })
                 self.publish(topic, message)
@@ -53,7 +57,9 @@ class SenzorUmiditate:
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("sensor_id", type=int, choices=range(5), nargs="?", default=0)
+    parser.add_argument("time_interval", type=int, nargs="?", default=1)
     sensor_id = parser.parse_args().sensor_id
+    time_interval = parser.parse_args().time_interval
 
     broker_address = "localhost"  # Replace with your MQTT broker address
     topic = "senzor/umiditate"
@@ -62,8 +68,8 @@ def main():
     senzor = SenzorUmiditate(broker_address)
     senzor.subscribe(topic)
 
-    data = SenzorUmiditate.read_data(file_path)
-    thread = threading.Thread(target=senzor.send_data_to_gateway, args=(data, topic, 1, sensor_id))
+    data = senzor.read_data(file_path)
+    thread = threading.Thread(target=senzor.send_data_to_gateway, args=(data, topic, time_interval, sensor_id))
     thread.start()
 
 if __name__ == "__main__":
