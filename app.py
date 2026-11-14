@@ -1,4 +1,6 @@
-from fastapi import FastAPI
+import importlib
+
+FastAPI = importlib.import_module("fastapi").FastAPI
 from influxdb_connection import InfluxDBConnection
 
 app = FastAPI()
